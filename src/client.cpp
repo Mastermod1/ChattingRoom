@@ -1,9 +1,11 @@
-#include <iostream>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
-#include <unistd.h>
+#include <netinet/in.h>
 #include <stdio.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+#include <iostream>
+#include <thread>
 
 int main()
 {
@@ -18,13 +20,28 @@ int main()
     struct sockaddr_in addr = {AF_INET, htons(9999), 0};
 
     connect(socketfd, (struct sockaddr *)&addr, sizeof(addr));
+    std::thread printer = std::thread(
+        [&socketfd]()
+        {
+            while (true)
+            {
+                char buffer[256] = {0};
+                if (recv(socketfd, buffer, 255, 0) == 0)
+                {
+                    return 0;
+                }
+                printf("%s\n", "Rec: ");
+                printf("%s\n", buffer);
+            }
+        });
+    printer.detach();
 
-    while(true)
+    while (true)
     {
-        char buffer[256] = { 0 };
-        printf("%s\n", "Rec: ");
-        recv(socketfd, buffer, 255, 0);
-        printf("%s\n", buffer);
+        char buffer[256] = {0};
+        printf("%s\n", "Sending: ");
+        read(0, buffer, 255);
+        send(socketfd, buffer, 255, 0);
     }
     close(socketfd);
 }
