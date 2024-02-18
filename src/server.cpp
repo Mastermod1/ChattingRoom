@@ -41,8 +41,7 @@ int main()
                 {
                     return 0;
                 }
-                printf("%s\n", "Rec: ");
-                printf("%s\n", buffer);
+                printf("Rec: %s\n", buffer);
             }
         });
     printer.detach();
@@ -50,7 +49,6 @@ int main()
     while (true)
     {
         char buffer[256] = {0};
-        printf("%s\n", "Sending: ");
         read(0, buffer, 255);
         send(clientfd, buffer, 255, 0);
     }

@@ -1,9 +1,10 @@
 cc_binary(
-    name = "main",
-    srcs = ["main.cpp"],
+    name = "server",
+    srcs = ["server.cpp"],
 )
 
 cc_binary(
     name = "client",
     srcs = ["client.cpp"],
+    deps = ["//:ncurses"],
 )
