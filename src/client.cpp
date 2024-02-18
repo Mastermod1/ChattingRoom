@@ -17,24 +17,14 @@ int main()
 
     struct sockaddr_in addr = {AF_INET, htons(9999), 0};
 
-    int bnd = bind(socketfd, (struct sockaddr *)&addr, sizeof(addr));
-    if (bnd == -1)
-    {
-        std::cerr << "Bind failed\n";
-        close(socketfd);
-        exit(-1);
-    }
-
-    int lsit = listen(socketfd, 10);
-
-    int clientfd = accept(socketfd, 0, 0);
+    connect(socketfd, (struct sockaddr *)&addr, sizeof(addr));
 
     while(true)
     {
         char buffer[256] = { 0 };
-        printf("%s\n", "Sending: ");
-        read(0, buffer, 255);
-        send(clientfd, buffer, 255, 0);
+        printf("%s\n", "Rec: ");
+        recv(socketfd, buffer, 255, 0);
+        printf("%s\n", buffer);
     }
     close(socketfd);
 }
