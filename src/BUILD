@@ -1,6 +1,7 @@
 cc_binary(
     name = "server",
     srcs = ["server.cpp"],
+    deps = ["//:ncurses"],
 )
 
 cc_binary(
