@@ -1,7 +1,6 @@
 #include <arpa/inet.h>
 #include <ncurses.h>
 #include <netinet/in.h>
-#include <stdio.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
@@ -11,15 +10,17 @@
 int main()
 {
     initscr();
+    cbreak();
+    noecho();
     refresh();
-    char ch;
-    WINDOW* chat_window = newwin(40, 120, 0, 0);
-    WINDOW* input_window = newwin(5, 120, 40, 0);
 
+    WINDOW* chat_window = newwin(LINES - 4, COLS, 0, 0);
+    WINDOW* input_window = newwin(4, COLS, LINES - 4, 0);
     box(chat_window, 0, 0);
     box(input_window, 0, 0);
     wrefresh(chat_window);
     wrefresh(input_window);
+
     int socketfd = socket(AF_INET, SOCK_STREAM, 0);
     if (socketfd == -1)
     {
@@ -30,11 +31,17 @@ int main()
 
     struct sockaddr_in addr = {AF_INET, htons(9999), 0};
 
-    connect(socketfd, (struct sockaddr*)&addr, sizeof(addr));
+    if (connect(socketfd, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+    {
+        std::cerr << "Connection failed\n";
+        close(socketfd);
+        exit(-1);
+    }
+
+    int new_line_index = 0;
     std::thread printer = std::thread(
-        [&socketfd, &chat_window]()
+        [&socketfd, &chat_window, &new_line_index]()
         {
-            int counter = 0;
             while (true)
             {
                 char buffer[256] = {0};
@@ -42,19 +49,47 @@ int main()
                 {
                     return 0;
                 }
-                mvwprintw(chat_window, 1 + counter, 1, "%s", buffer);
+                mvwprintw(chat_window, 1 + new_line_index, 1, "%s", buffer);
+                new_line_index++;
+                box(chat_window, 0, 0);
                 wrefresh(chat_window);
-                counter++;
             }
         });
     printer.detach();
 
     while (true)
     {
-        char buffer[256] = {0};
-        read(0, buffer, 255);
+        char buffer[256] = {0}, ch;
+        int i = 0;
+        while ((ch = wgetch(input_window)) != '\n')
+        {
+            if (ch == KEY_BACKSPACE || ch == 127)
+            {
+                if (i > 0)
+                {
+                    i--;
+                    mvwprintw(input_window, 1, 1 + i, " ");
+                    wrefresh(input_window);
+                }
+            }
+            else
+            {
+                buffer[i++] = ch;
+                mvwaddch(input_window, 1, 1 + i, ch);
+                wrefresh(input_window);
+            }
+        }
+        wclear(input_window);
+        box(input_window, 0, 0);
+        wrefresh(input_window);
+        buffer[i] = '\0';
+        mvwprintw(chat_window, 1 + new_line_index, 1, "%s", buffer);
+        new_line_index++;
+        box(chat_window, 0, 0);
+        wrefresh(chat_window);
         send(socketfd, buffer, 255, 0);
     }
+
     close(socketfd);
     delwin(chat_window);
     delwin(input_window);
