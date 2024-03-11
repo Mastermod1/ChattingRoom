@@ -10,6 +10,12 @@ cc_binary(
     deps = ["//:ncurses", "helpers"],
 )
 
+cc_binary(
+    name = "menu",
+    srcs = ["menu.cpp"],
+    deps = ["//:ncurses", "helpers"],
+)
+
 cc_library(
     name = "helpers",
     hdrs = ["helpers.hpp"],
