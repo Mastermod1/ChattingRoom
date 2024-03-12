@@ -9,7 +9,7 @@
 #include "helpers.hpp"
 #include "menu_wrapper.hpp"
 
-DisplayState renderMainMenu()
+DisplayState renderConnectMenu()
 {
     int y_size = 15;
     int x_size = 30;
@@ -18,7 +18,7 @@ DisplayState renderMainMenu()
     box(menu_window.get(), 0, 0);
     wrefresh(menu_window.get());
 
-    MenuWrapper menu({"Connect", "Host", "Exit"});
+    MenuWrapper menu({"Address:", "Port:", "Back"});
     set_menu_win(menu, menu_window.get());
     set_menu_sub(menu, derwin(menu_window.get(), y_size - 2, x_size - 2, 1, 1));
     post_menu(menu);
@@ -40,17 +40,9 @@ DisplayState renderMainMenu()
             {
                 ITEM* cur = current_item(menu);
                 std::string name = cur->name.str;
-                if (name == "Connect")
+                if (name == "Back")
                 {
-                    return DisplayState::Connect;
-                }
-                else if (name == "Host")
-                {
-                    return DisplayState::Exit;
-                }
-                else if (name == "Exit")
-                {
-                    return DisplayState::Exit;
+                    return DisplayState::MainMenu;
                 }
                 break;
             }

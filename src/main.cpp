@@ -3,6 +3,7 @@
 #include <functional>
 #include <unordered_map>
 
+#include "connect_menu.hpp"
 #include "helpers.hpp"
 #include "main_menu.hpp"
 
@@ -15,12 +16,12 @@ int main()
     refresh();
 
     std::unordered_map<DisplayState, std::function<DisplayState()>> state_map = {
-        {DisplayState::MainMenu, renderMainMenu}, {DisplayState::Exit, []() { return DisplayState::AfterExit; }}};
+        {DisplayState::MainMenu, renderMainMenu}, {DisplayState::Connect, renderConnectMenu}};
 
     DisplayState state = DisplayState::MainMenu;
-    while (state != DisplayState::AfterExit)
+    while (state != DisplayState::Exit)
     {
-        state_map.at(state)();
+        state = state_map.at(state)();
     }
 
     endwin();
