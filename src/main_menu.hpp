@@ -1,3 +1,5 @@
+#pragma once
+
 #include <ncurses.h>
 
 #include <functional>
@@ -7,7 +9,7 @@
 #include "helpers.hpp"
 #include "menu_wrapper.hpp"
 
-void renderMainMenu()
+DisplayState renderMainMenu()
 {
     int y_size = 15;
     int x_size = 30;
@@ -49,6 +51,7 @@ void renderMainMenu()
                 else if (name == "Exit")
                 {
                     mvprintw(0, 0, "Exit");
+                    return DisplayState::Exit;
                 }
                 break;
             }
