@@ -1,6 +1,5 @@
 #include <ncurses.h>
 
-#include <cstddef>
 #include <functional>
 #include <memory>
 #include <string>
@@ -8,14 +7,8 @@
 #include "helpers.hpp"
 #include "menu_wrapper.hpp"
 
-int main()
+void renderMainMenu()
 {
-    initscr();
-    cbreak();
-    noecho();
-    keypad(stdscr, TRUE);
-    refresh();
-
     int y_size = 15;
     int x_size = 30;
     std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> menu_window(
@@ -44,11 +37,23 @@ int main()
             case 10:  // Enter
             {
                 ITEM* cur = current_item(menu);
+                std::string name = cur->name.str;
+                if (name == "Connect")
+                {
+                    mvprintw(0, 0, "Connect");
+                }
+                else if (name == "Host")
+                {
+                    mvprintw(0, 0, "Host");
+                }
+                else if (name == "Exit")
+                {
+                    mvprintw(0, 0, "Exit");
+                }
                 break;
             }
         }
+        wrefresh(stdscr);
         wrefresh(menu_window.get());
     }
-
-    endwin();
 }

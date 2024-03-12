@@ -20,6 +20,7 @@ class MenuWrapper
 
     operator MENU*() { return menu_; };
 
+    // TODO rule of five
     ~MenuWrapper()
     {
         unpost_menu(menu_);

@@ -11,14 +11,14 @@ cc_binary(
 )
 
 cc_binary(
-    name = "menu",
-    srcs = ["menu.cpp"],
+    name = "main",
+    srcs = ["main.cpp"],
     deps = ["//:ncurses", "helpers"],
 )
 
 cc_library(
     name = "helpers",
-    hdrs = ["helpers.hpp", "menu_wrapper.hpp"],
+    hdrs = ["helpers.hpp", "menu_wrapper.hpp", "main_menu.hpp"],
     srcs = ["helpers.cpp"],
     deps = ["//:ncurses"],
 )
