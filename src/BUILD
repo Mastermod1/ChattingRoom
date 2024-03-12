@@ -18,7 +18,7 @@ cc_binary(
 
 cc_library(
     name = "helpers",
-    hdrs = ["helpers.hpp"],
+    hdrs = ["helpers.hpp", "menu_wrapper.hpp"],
     srcs = ["helpers.cpp"],
     deps = ["//:ncurses"],
 )

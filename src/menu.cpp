@@ -1,12 +1,12 @@
-#include <menu.h>
 #include <ncurses.h>
 
+#include <cstddef>
 #include <functional>
-#include <iostream>
 #include <memory>
 #include <string>
 
 #include "helpers.hpp"
+#include "menu_wrapper.hpp"
 
 int main()
 {
@@ -18,25 +18,17 @@ int main()
 
     int y_size = 15;
     int x_size = 30;
-    std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> chat_window(
+    std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> menu_window(
         newwin(y_size, x_size, (LINES - y_size) / 2, (COLS - x_size) / 2), delwin);
-    box(chat_window.get(), 0, 0);
-    wrefresh(chat_window.get());
+    box(menu_window.get(), 0, 0);
+    wrefresh(menu_window.get());
 
-    char* arr[] = {"Connect", "Host", "Exit"};
-    ITEM** items = (ITEM**)malloc(4 * sizeof(ITEM*));
-    for (int i = 0; i < 3; ++i)
-    {
-        items[i] = new_item("D", arr[i]);
-    }
-    items[3] = (ITEM*)NULL;
-
-    MENU* menu = new_menu(items);
-    set_menu_win(menu, chat_window.get());
-    set_menu_sub(menu, derwin(chat_window.get(), y_size - 2, x_size - 2, 1, 1));
-    refresh();
+    MenuWrapper menu({"Connect", "Host", "Exit"});
+    set_menu_win(menu, menu_window.get());
+    set_menu_sub(menu, derwin(menu_window.get(), y_size - 2, x_size - 2, 1, 1));
     post_menu(menu);
-    wrefresh(chat_window.get());
+    refresh();
+    wrefresh(menu_window.get());
 
     int ch;
     while ((ch = getch()) != KEY_F(1))
@@ -55,11 +47,8 @@ int main()
                 break;
             }
         }
-        wrefresh(chat_window.get());
+        wrefresh(menu_window.get());
     }
 
-    unpost_menu(menu);
-    free_menu(menu);
-    for (int i = 0; i < 4; i++) free_item(items[i]);
     endwin();
 }
