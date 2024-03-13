@@ -1,5 +1,5 @@
 cc_library(
     name = "ncurses",
-    linkopts = ["-lncurses", "-lmenu"],
+    linkopts = ["-lncurses", "-lmenu", "-lform"],
     visibility = ["//visibility:public"],
 )
