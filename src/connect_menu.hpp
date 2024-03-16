@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "form_builder.hpp"
 #include "form_wrapper.hpp"
 #include "helpers.hpp"
 
@@ -26,7 +27,14 @@ DisplayState renderConnectMenu()
     box(menu_window.get(), 0, 0);
     wrefresh(menu_window.get());
 
-    FormWrapper form({"Address:", "Port:", "Back"}, menu_window.get());
+    FormBuilder builder(menu_window.get());
+    FormWrapper form = builder.addLabelField("Address:")
+                           .addInputField()
+                           .addLabelField("Port:")
+                           .addInputField()
+                           .addLabelField("Back")
+                           .getForm();
+
     set_form_win(form, menu_window.get());
     set_form_sub(form, derwin(menu_window.get(), y_size - 2, x_size - 2, 1, 1));
     post_form(form);
