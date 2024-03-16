@@ -2,47 +2,52 @@
 
 #include <form.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 class FormWrapper
 {
   public:
-    FormWrapper(const std::vector<std::string>& fields, WINDOW* win)
+    FormWrapper(const std::vector<std::string>& field_labels, WINDOW* win)
     {
-        item_count_ = 2 * fields.size();
-        fields_ = (FIELD**)malloc((item_count_ + 1) * sizeof(FIELD*));
-        int x = 0;
-        for (int i = 0; i < item_count_; ++i)
+        int label_index = 0;
+        for (int i = 0; i < 2 * field_labels.size(); ++i)
         {
+            FIELD* field = new_field(1, 10, i, 0, 0, 0);
             if (i % 2 == 0)
             {
-                fields_[i] = new_field(1, 10, i, 0, 0, 0);
-                set_field_buffer(fields_[i], 0, fields[x++].c_str());
+                set_field_buffer(field, 0, field_labels[label_index++].c_str());
             }
             else
             {
-                fields_[i] = new_field(1, 10, i, 0, 0, 0);
-                set_field_back(fields_[i], A_UNDERLINE);
-                field_opts_off(fields_[i], O_AUTOSKIP);
+                set_field_back(field, A_UNDERLINE);
+                field_opts_off(field, O_AUTOSKIP);
             }
+            fields_.push_back(field);
         }
-        fields_[item_count_] = (FIELD*)NULL;
-        form_ = new_form(fields_);
+        fields_.push_back((FIELD*)NULL);
+        form_ = new_form(fields_.data());
+    }
+
+    FormWrapper(const std::vector<FIELD*> fields, WINDOW* win) : fields_(fields)
+    {
+        fields_.push_back((FIELD*)NULL);
+        form_ = new_form(fields_.data());
     }
 
     operator FORM*() { return form_; };
 
-    // TODO rule of five
     ~FormWrapper()
     {
         unpost_form(form_);
         free_form(form_);
-        for (int i = 0; i <= item_count_; i++) free_field(fields_[i]);
+        std::for_each(fields_.begin(), fields_.end(), [](FIELD* f) { free_field(f); });
+        fields_.clear();
     }
 
   private:
     FORM* form_;
-    FIELD** fields_;
     size_t item_count_{0};
+    std::vector<FIELD*> fields_;
 };
