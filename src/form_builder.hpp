@@ -16,7 +16,7 @@ class FormBuilder
 
     FormBuilder& addField(const std::function<void(FIELD*)>& callback)
     {
-        FIELD* field = new_field(1, 10, fields_.size(), 0, 0, 0);
+        FIELD* field = new_field(1, 20, fields_.size(), 0, 0, 0);
         fields_.push_back(field);
         callback(field);
         return *this;
@@ -25,7 +25,7 @@ class FormBuilder
     FormBuilder& addLabelField(
         const std::string& label, const std::function<void(FIELD*)>& callback = [](FIELD*) {})
     {
-        FIELD* field = new_field(1, 10, fields_.size(), 0, 0, 0);
+        FIELD* field = new_field(1, label.size(), fields_.size(), 0, 0, 0);
         fields_.push_back(field);
         set_field_buffer(field, 0, label.c_str());
         callback(field);
@@ -34,7 +34,7 @@ class FormBuilder
 
     FormBuilder& addInputField(const std::function<void(FIELD*)>& callback = [](FIELD*) {})
     {
-        FIELD* field = new_field(1, 10, fields_.size(), 0, 0, 0);
+        FIELD* field = new_field(1, 20, fields_.size(), 0, 0, 0);
         fields_.push_back(field);
         set_field_back(field, A_UNDERLINE);
         field_opts_off(field, O_AUTOSKIP);

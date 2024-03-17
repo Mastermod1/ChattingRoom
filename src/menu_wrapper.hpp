@@ -12,7 +12,7 @@ class MenuWrapper
     {
         item_count_ = fields.size();
         items_ = (ITEM**)malloc((item_count_ + 1) * sizeof(ITEM*));
-        for (int i = 0; i < item_count_; ++i)
+        for (size_t i = 0; i < item_count_; ++i)
         {
             items_[i] = new_item(fields.at(i).c_str(), "");
         }
@@ -27,7 +27,7 @@ class MenuWrapper
     {
         unpost_menu(menu_);
         free_menu(menu_);
-        for (int i = 0; i <= item_count_; i++) free_item(items_[i]);
+        for (size_t i = 0; i <= item_count_; i++) free_item(items_[i]);
     }
 
   private:

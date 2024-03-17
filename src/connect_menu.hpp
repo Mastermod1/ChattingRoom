@@ -3,6 +3,7 @@
 #include <form.h>
 #include <ncurses.h>
 
+#include <cctype>
 #include <functional>
 #include <memory>
 #include <string>
@@ -10,13 +11,6 @@
 #include "form_builder.hpp"
 #include "form_wrapper.hpp"
 #include "helpers.hpp"
-
-std::string truncate(const std::string& str)
-{
-    int last_letter_index = str.size() - 1;
-    while (str[last_letter_index] == ' ' and last_letter_index >= 0) last_letter_index--;
-    return str.substr(0, last_letter_index + 1);
-}
 
 DisplayState renderConnectMenu()
 {
@@ -27,11 +21,14 @@ DisplayState renderConnectMenu()
     box(menu_window.get(), 0, 0);
     wrefresh(menu_window.get());
 
-    FormBuilder builder(menu_window.get());
-    FormWrapper form = builder.addLabelField("Address:")
+    FormWrapper form = FormBuilder(menu_window.get())
+                           .addLabelField("Name:")
+                           .addInputField()
+                           .addLabelField("Address:")
                            .addInputField()
                            .addLabelField("Port:")
                            .addInputField()
+                           .addLabelField("Connect")
                            .addLabelField("Back")
                            .getForm();
 
@@ -67,11 +64,27 @@ DisplayState renderConnectMenu()
                 {
                     return DisplayState::MainMenu;
                 }
+                else if (value == "Connect")
+                {
+                    const auto& form_values = form.submitFormValues();
+                    int i = 1;
+                    for (auto x : form_values)
+                    {
+                        mvprintw(i++, 0, "%s.", (x.first + " " + x.second).c_str());
+                    }
+                }
                 break;
+            }
+            case KEY_BACKSPACE:
+            {
+                form_driver(form, REQ_DEL_PREV);
             }
             default:
             {
-                form_driver(form, ch);
+                if (isprint(ch))
+                {
+                    form_driver(form, ch);
+                }
                 break;
             }
         }
