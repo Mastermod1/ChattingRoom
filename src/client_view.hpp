@@ -4,22 +4,20 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <chrono>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <thread>
+#include <unordered_map>
 
 #include "helpers.hpp"
 
-int main()
+DisplayState renderClientView(const std::unordered_map<std::string, std::string>& form)
 {
-    initscr();
-    cbreak();
-    noecho();
-    refresh();
-
     std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> chat_window(newwin(LINES - 4, COLS, 0, 0), delwin);
     std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> input_window(newwin(4, COLS, LINES - 4, 0), delwin);
+
     box(chat_window.get(), 0, 0);
     box(input_window.get(), 0, 0);
     wrefresh(chat_window.get());
@@ -53,7 +51,7 @@ int main()
                 {
                     return 0;
                 }
-                mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s", buffer);
+                mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s: %s", "other", buffer);
                 new_line_index++;
                 box(chat_window.get(), 0, 0);
                 wrefresh(chat_window.get());
@@ -64,10 +62,12 @@ int main()
     while (true)
     {
         char buffer[256] = {0};
-        getInput(buffer, input_window, chat_window, new_line_index, "Server");
+        getInput(buffer, input_window, chat_window, new_line_index, form.at("name"));
         send(socketfd, buffer, 255, 0);
     }
 
     close(socketfd);
     endwin();
+
+    return DisplayState::Exit;
 }

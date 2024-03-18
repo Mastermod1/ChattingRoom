@@ -12,7 +12,7 @@
 #include "form_wrapper.hpp"
 #include "helpers.hpp"
 
-DisplayState renderConnectMenu()
+DisplayState renderConnectMenu(std::unordered_map<std::string, std::string>& form_output)
 {
     int y_size = 15;
     int x_size = 30;
@@ -72,6 +72,8 @@ DisplayState renderConnectMenu()
                     {
                         mvprintw(i++, 0, "%s.", (x.first + " " + x.second).c_str());
                     }
+                    form_output = form_values;
+                    return DisplayState::Client;
                 }
                 break;
             }

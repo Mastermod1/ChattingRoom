@@ -58,7 +58,7 @@ int main()
                 {
                     return 0;
                 }
-                mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s", buffer);
+                mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s: %s", "other", buffer);
                 new_line_index++;
                 box(chat_window.get(), 0, 0);
                 wrefresh(chat_window.get());
@@ -69,7 +69,7 @@ int main()
     while (true)
     {
         char buffer[256] = {0};
-        getInput(buffer, input_window, chat_window, new_line_index);
+        getInput(buffer, input_window, chat_window, new_line_index, "Server");
         send(clientfd, buffer, 255, 0);
     }
 
