@@ -1,4 +1,4 @@
-#pragma once
+#include "main_menu_state.hpp"
 
 #include <ncurses.h>
 
@@ -6,10 +6,11 @@
 #include <memory>
 #include <string>
 
+#include "context.hpp"
 #include "helpers.hpp"
 #include "menu_wrapper.hpp"
 
-DisplayState renderMainMenu()
+void MainMenuState::render() const
 {
     int y_size = 15;
     int x_size = 30;
@@ -42,15 +43,23 @@ DisplayState renderMainMenu()
                 std::string name = cur->name.str;
                 if (name == "Connect")
                 {
-                    return DisplayState::Connect;
+                    if (auto ptr = ctx_.lock())
+                    {
+                        ptr->changeState(StateFactory::get(DisplayState::Connect));
+                    }
+                    return;
                 }
                 else if (name == "Host")
                 {
-                    return DisplayState::Exit;
+                    if (auto ptr = ctx_.lock())
+                    {
+                        ptr->changeState(StateFactory::get(DisplayState::MainMenu));
+                    }
+                    return;
                 }
                 else if (name == "Exit")
                 {
-                    return DisplayState::Exit;
+                    return;
                 }
                 break;
             }
@@ -58,6 +67,4 @@ DisplayState renderMainMenu()
         wrefresh(stdscr);
         wrefresh(menu_window.get());
     }
-
-    return DisplayState::Exit;
 }

@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
-std::string truncate(const std::string& str)
+inline std::string truncate(const std::string& str)
 {
     int last_letter_index = str.size() - 1;
     while (str[last_letter_index] == ' ' and last_letter_index >= 0) last_letter_index--;

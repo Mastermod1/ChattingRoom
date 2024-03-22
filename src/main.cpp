@@ -1,12 +1,9 @@
 #include <ncurses.h>
 
-#include <functional>
-#include <unordered_map>
+#include <memory>
 
-#include "client_view.hpp"
-#include "connect_menu.hpp"
+#include "context.hpp"
 #include "helpers.hpp"
-#include "main_menu.hpp"
 
 int main()
 {
@@ -16,18 +13,10 @@ int main()
     keypad(stdscr, TRUE);
     refresh();
 
-    std::unordered_map<std::string, std::string> form;
+    std::shared_ptr<Context> context = std::make_shared<Context>(StateFactory::get(DisplayState::MainMenu));
+    context->setContextForState();
 
-    std::unordered_map<DisplayState, std::function<DisplayState()>> state_map = {
-        {DisplayState::MainMenu, renderMainMenu},
-        {DisplayState::Connect, [&form]() { return renderConnectMenu(form); }},
-        {DisplayState::Client, [&form]() { return renderClientView(form); }}};
-
-    DisplayState state = DisplayState::MainMenu;
-    while (state != DisplayState::Exit)
-    {
-        state = state_map.at(state)();
-    }
+    context->render();
 
     endwin();
 }

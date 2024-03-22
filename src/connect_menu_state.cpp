@@ -1,4 +1,4 @@
-#pragma once
+#include "connect_menu_state.hpp"
 
 #include <form.h>
 #include <ncurses.h>
@@ -8,11 +8,12 @@
 #include <memory>
 #include <string>
 
+#include "context.hpp"
 #include "form_builder.hpp"
 #include "form_wrapper.hpp"
 #include "helpers.hpp"
 
-DisplayState renderConnectMenu(std::unordered_map<std::string, std::string>& form_output)
+void ConnectMenuState::render() const
 {
     int y_size = 15;
     int x_size = 30;
@@ -62,7 +63,11 @@ DisplayState renderConnectMenu(std::unordered_map<std::string, std::string>& for
                 mvprintw(0, 0, "%s.", value.c_str());
                 if (value == "Back")
                 {
-                    return DisplayState::MainMenu;
+                    if (auto ptr = ctx_.lock())
+                    {
+                        ptr->changeState(StateFactory::get(DisplayState::MainMenu));
+                    }
+                    return;
                 }
                 else if (value == "Connect")
                 {
@@ -72,8 +77,12 @@ DisplayState renderConnectMenu(std::unordered_map<std::string, std::string>& for
                     {
                         mvprintw(i++, 0, "%s.", (x.first + " " + x.second).c_str());
                     }
-                    form_output = form_values;
-                    return DisplayState::Client;
+                    // form_output = form_values;
+                    if (auto ptr = ctx_.lock())
+                    {
+                        ptr->changeState(StateFactory::get(DisplayState::MainMenu));
+                    }
+                    return;
                 }
                 break;
             }
@@ -92,5 +101,4 @@ DisplayState renderConnectMenu(std::unordered_map<std::string, std::string>& for
         }
         wrefresh(menu_window.get());
     }
-    return DisplayState::Exit;
 }

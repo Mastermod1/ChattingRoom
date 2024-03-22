@@ -2,6 +2,11 @@
 
 #include <ncurses.h>
 
+#include <memory>
+
+#include "connect_menu_state.hpp"
+#include "main_menu_state.hpp"
+
 void getInput(char* buffer, std::unique_ptr<WINDOW, std::function<void(WINDOW*)>>& input_window,
               std::unique_ptr<WINDOW, std::function<void(WINDOW*)>>& chat_window, int& new_line_index,
               const std::string& name)
@@ -36,4 +41,18 @@ void getInput(char* buffer, std::unique_ptr<WINDOW, std::function<void(WINDOW*)>
     new_line_index++;
     box(chat_window.get(), 0, 0);
     wrefresh(chat_window.get());
+}
+
+std::unique_ptr<State> StateFactory::get(const DisplayState state)
+{
+    switch (state)
+    {
+        case DisplayState::Connect:
+            return std::make_unique<ConnectMenuState>();
+        default:
+        case DisplayState::MainMenu:
+            return std::make_unique<MainMenuState>();
+    }
+
+    return std::make_unique<MainMenuState>();
 }
