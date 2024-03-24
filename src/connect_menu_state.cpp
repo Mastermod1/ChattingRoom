@@ -77,10 +77,10 @@ void ConnectMenuState::render() const
                     {
                         mvprintw(i++, 0, "%s.", (x.first + " " + x.second).c_str());
                     }
-                    // form_output = form_values;
                     if (auto ptr = ctx_.lock())
                     {
-                        ptr->changeState(StateFactory::get(DisplayState::MainMenu));
+                        ptr->setFormValues(form_values);
+                        ptr->changeState(StateFactory::get(DisplayState::Client));
                     }
                     return;
                 }

@@ -1,19 +1,21 @@
+#include "client_state.hpp"
+
 #include <arpa/inet.h>
 #include <ncurses.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include <chrono>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <thread>
 #include <unordered_map>
 
+#include "context.hpp"
 #include "helpers.hpp"
 
-DisplayState renderClientView(const std::unordered_map<std::string, std::string>& form)
+void ClientState::render() const
 {
     std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> chat_window(newwin(LINES - 4, COLS, 0, 0), delwin);
     std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> input_window(newwin(4, COLS, LINES - 4, 0), delwin);
@@ -22,6 +24,12 @@ DisplayState renderClientView(const std::unordered_map<std::string, std::string>
     box(input_window.get(), 0, 0);
     wrefresh(chat_window.get());
     wrefresh(input_window.get());
+
+    std::unordered_map<std::string, std::string> form_values;
+    if (auto ptr = ctx_.lock())
+    {
+        form_values = ptr->getFormValues();
+    }
 
     int socketfd = socket(AF_INET, SOCK_STREAM, 0);
     if (socketfd == -1)
@@ -62,12 +70,10 @@ DisplayState renderClientView(const std::unordered_map<std::string, std::string>
     while (true)
     {
         char buffer[256] = {0};
-        getInput(buffer, input_window, chat_window, new_line_index, form.at("name"));
+        getInput(buffer, input_window, chat_window, new_line_index, form_values.at("name"));
         send(socketfd, buffer, 255, 0);
     }
 
     close(socketfd);
     endwin();
-
-    return DisplayState::Exit;
 }

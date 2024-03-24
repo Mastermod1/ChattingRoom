@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "client_state.hpp"
 #include "connect_menu_state.hpp"
 #include "main_menu_state.hpp"
 
@@ -49,6 +50,8 @@ std::unique_ptr<State> StateFactory::get(const DisplayState state)
     {
         case DisplayState::Connect:
             return std::make_unique<ConnectMenuState>();
+        case DisplayState::Client:
+            return std::make_unique<ClientState>();
         default:
         case DisplayState::MainMenu:
             return std::make_unique<MainMenuState>();
