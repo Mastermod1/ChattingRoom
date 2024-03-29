@@ -52,9 +52,10 @@ std::unique_ptr<State> StateFactory::get(const DisplayState state)
             return std::make_unique<ConnectMenuState>();
         case DisplayState::Client:
             return std::make_unique<ClientState>();
-        default:
         case DisplayState::MainMenu:
             return std::make_unique<MainMenuState>();
+        default:
+            return nullptr; 
     }
 
     return std::make_unique<MainMenuState>();

@@ -1,4 +1,3 @@
-#include <ncurses.h>
 
 #include <memory>
 
@@ -7,16 +6,13 @@
 
 int main()
 {
-    initscr();
-    cbreak();
-    noecho();
-    keypad(stdscr, TRUE);
-    refresh();
-
-    std::shared_ptr<Context> context = std::make_shared<Context>(StateFactory::get(DisplayState::MainMenu));
+    const auto context = Context::create(StateFactory::get(DisplayState::MainMenu));
     context->setContextForState();
 
-    context->render();
+    bool has_next_view = true;
+    do
+    {
+        has_next_view = context->render();
+    } while (has_next_view);
 
-    endwin();
 }

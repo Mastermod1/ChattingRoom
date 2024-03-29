@@ -59,6 +59,10 @@ void MainMenuState::render() const
                 }
                 else if (name == "Exit")
                 {
+                    if (auto ptr = ctx_.lock())
+                    {
+                        ptr->changeState(StateFactory::get(DisplayState::Exit));
+                    }
                     return;
                 }
                 break;
