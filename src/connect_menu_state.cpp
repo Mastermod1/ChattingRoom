@@ -13,7 +13,7 @@
 #include "form_wrapper.hpp"
 #include "helpers.hpp"
 
-void ConnectMenuState::render() const
+void ConnectMenuState::render()
 {
     int y_size = 15;
     int x_size = 30;

@@ -10,7 +10,7 @@
 #include "helpers.hpp"
 #include "menu_wrapper.hpp"
 
-void MainMenuState::render() const
+void MainMenuState::render()
 {
     int y_size = 15;
     int x_size = 30;

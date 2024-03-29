@@ -16,7 +16,7 @@ class ConnectMenuState : public State
     ConnectMenuState& operator=( ConnectMenuState&& rhs) = default;
     virtual ~ConnectMenuState() = default;
 
-    void render() const override;
+    void render() override;
     void setContext(const std::shared_ptr<Context>& ctx) override { ctx_ = ctx; }
 
   private:

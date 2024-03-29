@@ -15,7 +15,7 @@
 #include "context.hpp"
 #include "helpers.hpp"
 
-void ClientState::render() const
+void ClientState::render()
 {
     std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> chat_window(newwin(LINES - 4, COLS, 0, 0), delwin);
     std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> input_window(newwin(4, COLS, LINES - 4, 0), delwin);
@@ -49,7 +49,7 @@ void ClientState::render() const
     }
 
     int new_line_index = 0;
-    std::thread printer = std::thread(
+    receiver_thread = std::make_unique<std::thread>(
         [&socketfd, &chat_window, &new_line_index]()
         {
             while (true)
@@ -65,7 +65,6 @@ void ClientState::render() const
                 wrefresh(chat_window.get());
             }
         });
-    printer.detach();
 
     while (true)
     {
@@ -75,5 +74,13 @@ void ClientState::render() const
     }
 
     close(socketfd);
+}
+
+ClientState::~ClientState()
+{
+    if (receiver_thread != nullptr)
+    {
+        receiver_thread->join();
+    }
     endwin();
 }
