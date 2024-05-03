@@ -6,6 +6,7 @@
 
 #include "client_state.hpp"
 #include "connect_menu_state.hpp"
+#include "host_state.hpp"
 #include "main_menu_state.hpp"
 
 void getInput(char* buffer, std::unique_ptr<WINDOW, std::function<void(WINDOW*)>>& input_window,
@@ -54,8 +55,10 @@ std::unique_ptr<State> StateFactory::get(const DisplayState state)
             return std::make_unique<ClientState>();
         case DisplayState::MainMenu:
             return std::make_unique<MainMenuState>();
+        case DisplayState::Host:
+            return std::make_unique<HostState>();
         default:
-            return nullptr; 
+            return nullptr;
     }
 
     return std::make_unique<MainMenuState>();

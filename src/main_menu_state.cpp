@@ -53,7 +53,7 @@ void MainMenuState::render()
                 {
                     if (auto ptr = ctx_.lock())
                     {
-                        ptr->changeState(StateFactory::get(DisplayState::MainMenu));
+                        ptr->changeState(StateFactory::get(DisplayState::Host));
                     }
                     return;
                 }
