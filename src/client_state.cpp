@@ -48,9 +48,15 @@ void ClientState::render()
         exit(-1);
     }
 
+    const std::string& name = form_values.at("name");
+    send(socketfd, name.c_str(), name.size(), 0);
+
+    char client_name[25] = {0};
+    recv(socketfd, client_name, 25, 0);
+
     int new_line_index = 0;
     receiver_thread = std::make_unique<std::thread>(
-        [&socketfd, &chat_window, &new_line_index]()
+        [&socketfd, &chat_window, &new_line_index, &client_name]()
         {
             while (true)
             {
@@ -59,7 +65,7 @@ void ClientState::render()
                 {
                     return 0;
                 }
-                mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s: %s", "other", buffer);
+                mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s: %s", client_name, buffer);
                 new_line_index++;
                 box(chat_window.get(), 0, 0);
                 wrefresh(chat_window.get());
@@ -69,7 +75,7 @@ void ClientState::render()
     while (true)
     {
         char buffer[256] = {0};
-        getInput(buffer, input_window, chat_window, new_line_index, form_values.at("name"));
+        getInput(buffer, input_window, chat_window, new_line_index, name);
         send(socketfd, buffer, 255, 0);
     }
 

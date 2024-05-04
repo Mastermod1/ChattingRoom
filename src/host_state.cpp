@@ -49,13 +49,19 @@ void HostState::render()
         exit(-1);
     }
 
-    int lsit = listen(socketfd, 10);
+    listen(socketfd, 10);
 
     int clientfd = accept(socketfd, 0, 0);
 
+    const std::string& name = "MyRandomName";
+    send(clientfd, name.c_str(), name.size(), 0);
+
+    char client_name[25] = {0};
+    recv(clientfd, client_name, 25, 0);
+
     int new_line_index = 0;
     std::thread printer = std::thread(
-        [&clientfd, &chat_window, &new_line_index]()
+        [&clientfd, &chat_window, &new_line_index, &client_name]()
         {
             while (true)
             {
@@ -64,7 +70,7 @@ void HostState::render()
                 {
                     return 0;
                 }
-                mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s: %s", "other", buffer);
+                mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s: %s", client_name, buffer);
                 new_line_index++;
                 box(chat_window.get(), 0, 0);
                 wrefresh(chat_window.get());
@@ -75,7 +81,7 @@ void HostState::render()
     while (true)
     {
         char buffer[256] = {0};
-        getInput(buffer, input_window, chat_window, new_line_index, "Server");
+        getInput(buffer, input_window, chat_window, new_line_index, name);
         send(clientfd, buffer, 255, 0);
     }
 
