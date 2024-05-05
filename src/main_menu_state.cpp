@@ -9,6 +9,7 @@
 #include "context.hpp"
 #include "helpers.hpp"
 #include "menu_wrapper.hpp"
+#include "state_factory.hpp"
 
 void MainMenuState::render()
 {
@@ -53,7 +54,7 @@ void MainMenuState::render()
                 {
                     if (auto ptr = ctx_.lock())
                     {
-                        ptr->changeState(StateFactory::get(DisplayState::Host));
+                        ptr->changeState(StateFactory::get(DisplayState::HostMenu));
                     }
                     return;
                 }

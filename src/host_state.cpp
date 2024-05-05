@@ -53,7 +53,7 @@ void HostState::render()
 
     int clientfd = accept(socketfd, 0, 0);
 
-    const std::string& name = "MyRandomName";
+    const std::string &name = form_values.at("name");
     send(clientfd, name.c_str(), name.size(), 0);
 
     char client_name[25] = {0};
