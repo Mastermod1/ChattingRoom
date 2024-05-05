@@ -7,13 +7,13 @@
 #include <unistd.h>
 
 #include <functional>
-#include <iostream>
 #include <memory>
 #include <thread>
 #include <unordered_map>
 
 #include "context.hpp"
 #include "helpers.hpp"
+#include "logger.hpp"
 
 void ClientState::render()
 {
@@ -34,7 +34,7 @@ void ClientState::render()
     int socketfd = socket(AF_INET, SOCK_STREAM, 0);
     if (socketfd == -1)
     {
-        std::cerr << "Socket not created\n";
+        LOG_INFO() << "Socket not created";
         close(socketfd);
         exit(-1);
     }
@@ -43,7 +43,7 @@ void ClientState::render()
 
     if (connect(socketfd, (struct sockaddr*)&addr, sizeof(addr)) == -1)
     {
-        std::cerr << "Connection failed\n";
+        LOG_INFO() << "Connection failed";
         close(socketfd);
         exit(-1);
     }

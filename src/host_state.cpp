@@ -7,13 +7,13 @@
 #include <unistd.h>
 
 #include <functional>
-#include <iostream>
 #include <memory>
 #include <thread>
 #include <unordered_map>
 
 #include "context.hpp"
 #include "helpers.hpp"
+#include "logger.hpp"
 
 void HostState::render()
 {
@@ -34,7 +34,7 @@ void HostState::render()
     int socketfd = socket(AF_INET, SOCK_STREAM, 0);
     if (socketfd == -1)
     {
-        std::cerr << "Socket not created\n";
+        LOG_INFO() << "Socket not created";
         close(socketfd);
         exit(-1);
     }
@@ -44,7 +44,7 @@ void HostState::render()
     int bnd = bind(socketfd, (struct sockaddr *)&addr, sizeof(addr));
     if (bnd == -1)
     {
-        std::cerr << "Bind failed\n";
+        LOG_INFO() << "Bind failed";
         close(socketfd);
         exit(-1);
     }
