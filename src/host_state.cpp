@@ -18,8 +18,8 @@
 
 void HostState::render()
 {
-    std::unique_ptr<WINDOW, std::function<void(WINDOW *)>> chat_window(newwin(LINES - 4, COLS, 0, 0), delwin);
-    std::unique_ptr<WINDOW, std::function<void(WINDOW *)>> input_window(newwin(4, COLS, LINES - 4, 0), delwin);
+    std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> chat_window(newwin(LINES - 4, COLS, 0, 0), delwin);
+    std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> input_window(newwin(4, COLS, LINES - 4, 0), delwin);
 
     box(chat_window.get(), 0, 0);
     box(input_window.get(), 0, 0);
@@ -42,7 +42,7 @@ void HostState::render()
 
     struct sockaddr_in addr = {AF_INET, htons(9999), 0};
 
-    int bnd = bind(socketfd, (struct sockaddr *)&addr, sizeof(addr));
+    int bnd = bind(socketfd, (struct sockaddr*)&addr, sizeof(addr));
     if (bnd == -1)
     {
         LOG_INFO() << "Bind failed";
@@ -50,8 +50,10 @@ void HostState::render()
         exit(-1);
     }
 
-    const std::string &name = form_values.at("name");
+    const std::string& name = form_values.at("name");
     std::vector<int> clients;
+
+    listen(socketfd, 10);
 
     int new_line_index = 0;
     std::thread listener_thread = std::thread(
@@ -59,8 +61,6 @@ void HostState::render()
         {
             while (true)
             {
-                listen(socketfd, 10);
-
                 int clientfd = accept(socketfd, 0, 0);
                 clients.push_back(clientfd);
                 LOG_INFO() << "Accepted client: " << std::to_string(clientfd).c_str();
@@ -81,10 +81,15 @@ void HostState::render()
                                 return 0;
                             }
 
+                            LOG_INFO() << "Send to all from " << std::to_string(clientfd).c_str();
                             std::for_each(clients.begin(), clients.end(),
-                                          [&buffer, &clientfd](const int &client)
+                                          [&buffer, &clientfd, &socketfd](const int& client)
                                           {
-                                              if (client != clientfd) send(client, buffer, 255, 0);
+                                              if (client != clientfd)
+                                              {
+                                                  LOG_INFO() << "Send to client: " << std::to_string(client).c_str();
+                                                  send(client, buffer, 255, 0);
+                                              }
                                           });
                             mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s: %s", client_name, buffer);
                             new_line_index++;
@@ -101,7 +106,7 @@ void HostState::render()
     {
         char buffer[256] = {0};
         getInput(buffer, input_window, chat_window, new_line_index, name);
-        std::for_each(clients.begin(), clients.end(), [&buffer](const int &client) { send(client, buffer, 255, 0); });
+        std::for_each(clients.begin(), clients.end(), [&buffer](const int& client) { send(client, buffer, 255, 0); });
     }
 
     close(socketfd);
