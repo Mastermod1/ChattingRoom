@@ -64,6 +64,24 @@ void HostState::render()
             {
                 int clientfd = accept(socketfd, 0, 0);
                 clients.push_back(clientfd);
+                char name[256] = {0};
+                if (recv(clientfd, name, 255, 0) == 0)
+                {
+                    return 0;
+                }
+                const std::string welcome_message = std::string(name) + " has connected!";
+                std::for_each(clients.begin(), clients.end(),
+                              [&clientfd, &welcome_message](const int& client)
+                              {
+                                  if (client != clientfd)
+                                  {
+                                      send(client, welcome_message.c_str(), 255, 0);
+                                  }
+                              });
+                mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s", welcome_message.c_str());
+                new_line_index++;
+                box(chat_window.get(), 0, 0);
+                wrefresh(chat_window.get());
                 LOG_INFO() << "Accepted client: " << std::to_string(clientfd).c_str();
 
                 std::thread printer = std::thread(
@@ -87,7 +105,7 @@ void HostState::render()
                                                   send(client, buffer, 255, 0);
                                               }
                                           });
-                            mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%d: %s", clientfd, buffer);
+                            mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s", buffer);
                             new_line_index++;
                             box(chat_window.get(), 0, 0);
                             wrefresh(chat_window.get());

@@ -49,6 +49,7 @@ void ClientState::render()
     }
 
     const std::string& name = form_values.at("name");
+    send(socketfd, name.c_str(), 255, 0);
     LOG_INFO() << "Extracted name: " << name.c_str();
 
     int new_line_index = 0;
