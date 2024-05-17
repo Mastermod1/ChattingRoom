@@ -51,6 +51,7 @@ void HostState::render()
     }
 
     const std::string& name = form_values.at("name");
+    LOG_INFO() << "Extracted name: " << name.c_str();
     std::vector<int> clients;
 
     listen(socketfd, 10);
@@ -65,13 +66,8 @@ void HostState::render()
                 clients.push_back(clientfd);
                 LOG_INFO() << "Accepted client: " << std::to_string(clientfd).c_str();
 
-                send(clientfd, name.c_str(), name.size(), 0);
-
-                char client_name[25] = {0};
-                recv(clientfd, client_name, 25, 0);
-
                 std::thread printer = std::thread(
-                    [&socketfd, &chat_window, &new_line_index, &clientfd, &client_name, &clients]()
+                    [&chat_window, &new_line_index, &clients](int clientfd)
                     {
                         while (true)
                         {
@@ -83,7 +79,7 @@ void HostState::render()
 
                             LOG_INFO() << "Send to all from " << std::to_string(clientfd).c_str();
                             std::for_each(clients.begin(), clients.end(),
-                                          [&buffer, &clientfd, &socketfd](const int& client)
+                                          [&buffer, &clientfd](const int& client)
                                           {
                                               if (client != clientfd)
                                               {
@@ -91,12 +87,13 @@ void HostState::render()
                                                   send(client, buffer, 255, 0);
                                               }
                                           });
-                            mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s: %s", client_name, buffer);
+                            mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%d: %s", clientfd, buffer);
                             new_line_index++;
                             box(chat_window.get(), 0, 0);
                             wrefresh(chat_window.get());
                         }
-                    });
+                    },
+                    clientfd);
                 printer.detach();
             }
         });
@@ -112,11 +109,4 @@ void HostState::render()
     close(socketfd);
 }
 
-HostState::~HostState()
-{
-    if (receiver_thread != nullptr)
-    {
-        receiver_thread->join();
-    }
-    endwin();
-}
+HostState::~HostState() { endwin(); }

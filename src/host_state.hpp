@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <thread>
 
 #include "state.hpp"
 
@@ -22,5 +21,4 @@ class HostState : public State
 
   private:
     std::weak_ptr<Context> ctx_;
-    std::unique_ptr<std::thread> receiver_thread;
 };
