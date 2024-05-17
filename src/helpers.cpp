@@ -22,7 +22,7 @@ void getInput(char* buffer, std::unique_ptr<WINDOW, std::function<void(WINDOW*)>
         {
             if (i - name.length() - 2 > 0)
             {
-                mvwprintw(input_window.get(), 1, 1 + i - name.length() - 2, " ");
+                mvwprintw(input_window.get(), 1, i - name.length() - 2, " ");
                 i--;
                 wrefresh(input_window.get());
             }
@@ -30,7 +30,7 @@ void getInput(char* buffer, std::unique_ptr<WINDOW, std::function<void(WINDOW*)>
         else
         {
             buffer[i++] = ch;
-            mvwaddch(input_window.get(), 1, 1 + i - name.length() - 2, ch);
+            mvwaddch(input_window.get(), 1, i - name.length() - 2, ch);
             wrefresh(input_window.get());
         }
         wmove(input_window.get(), 1, 1 + i - name.length() - 2);
