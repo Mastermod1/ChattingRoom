@@ -39,7 +39,10 @@ void ClientState::render()
         exit(-1);
     }
 
-    struct sockaddr_in addr = {AF_INET, htons(9999), 0};
+    const std::string& address = form_values.at("address");
+    const std::string& port = form_values.at("port");
+    const in_addr_t dst_ip_addr = convertStringAddressToUint32(address);
+    const struct sockaddr_in addr = {AF_INET, htons(std::stoi(port)), dst_ip_addr};
 
     if (connect(socketfd, (struct sockaddr*)&addr, sizeof(addr)) == -1)
     {
