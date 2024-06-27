@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "state.hpp"
+#include "tcp_ip_connection.hpp"
 
 class Context;
 
@@ -21,4 +22,5 @@ class HostState : public State
 
   private:
     std::weak_ptr<Context> ctx_;
+    TcpIpConnection connection_; 
 };

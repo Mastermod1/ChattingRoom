@@ -4,6 +4,7 @@
 #include <thread>
 
 #include "state.hpp"
+#include "tcp_ip_connection.hpp"
 
 class Context;
 
@@ -12,9 +13,9 @@ class ClientState : public State
   public:
     ClientState() = default;
     ClientState(const ClientState& rhs) = default;
-    ClientState(ClientState&& rhs) = default;
+    ClientState(ClientState&& rhs) noexcept = default;
     ClientState& operator=(const ClientState& rhs) = default;
-    ClientState& operator=(ClientState&& rhs) = default;
+    ClientState& operator=(ClientState&& rhs) noexcept = default;
     virtual ~ClientState();
 
     void render() override;
@@ -22,5 +23,6 @@ class ClientState : public State
 
   private:
     std::weak_ptr<Context> ctx_;
-    std::unique_ptr<std::thread> receiver_thread;
+    std::unique_ptr<std::thread> receiver_thread_;
+    TcpIpConnection connection_;
 };
