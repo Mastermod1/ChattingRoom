@@ -1,5 +1,5 @@
-#include "context.hpp"
-#include "state_factory.hpp"
+#include "src/view_states/context.hpp"
+#include "src/view_states/state_factory.hpp"
 
 int main()
 {

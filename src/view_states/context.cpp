@@ -1,4 +1,4 @@
-#include "context.hpp"
+#include "src/view_states/context.hpp"
 
 #include <ncurses.h>
 

@@ -1,4 +1,4 @@
-#include "connect_menu_state.hpp"
+#include "src/view_states/host_menu_state.hpp"
 
 #include <form.h>
 #include <ncurses.h>
@@ -8,13 +8,13 @@
 #include <memory>
 #include <string>
 
-#include "context.hpp"
-#include "form_builder.hpp"
-#include "form_wrapper.hpp"
-#include "helpers.hpp"
-#include "state_factory.hpp"
+#include "src/view_states/context.hpp"
+#include "src/helpers/ncurses_wrappers/form_builder.hpp"
+#include "src/helpers/ncurses_wrappers/form_wrapper.hpp"
+#include "src/helpers/helpers.hpp"
+#include "src/view_states/state_factory.hpp"
 
-void ConnectMenuState::render()
+void HostMenuState::render()
 {
     int y_size = 15;
     int x_size = 30;
@@ -30,7 +30,7 @@ void ConnectMenuState::render()
                            .addInputField()
                            .addLabelField("Port:")
                            .addInputField()
-                           .addLabelField("Connect")
+                           .addLabelField("Host")
                            .addLabelField("Back")
                            .getForm();
 
@@ -70,7 +70,7 @@ void ConnectMenuState::render()
                     }
                     return;
                 }
-                else if (value == "Connect")
+                else if (value == "Host")
                 {
                     const auto& form_values = form.submitFormValues();
                     int i = 1;
@@ -81,7 +81,7 @@ void ConnectMenuState::render()
                     if (auto ptr = ctx_.lock())
                     {
                         ptr->setFormValues(form_values);
-                        ptr->changeState(StateFactory::get(DisplayState::Client));
+                        ptr->changeState(StateFactory::get(DisplayState::Host));
                     }
                     return;
                 }
