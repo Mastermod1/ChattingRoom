@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "state.hpp"
+#include "src/unnamed_protocol/socket_handler.hpp"
 
 class Context;
 
@@ -21,4 +22,5 @@ class HostState : public State
 
   private:
     std::weak_ptr<Context> ctx_;
+    unnamed_protocol::SocketHandler connection_; 
 };
