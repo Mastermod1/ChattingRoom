@@ -1,9 +1,8 @@
 #include <gtest/gtest.h>
 
 #include <cstdint>
-#include <iostream>
 
-#include "../src/helpers.hpp"
+#include "src/helpers/helpers.hpp"
 
 TEST(ConvertStringAddressToUint32Should, ReturnMaxUint32For255ValueOctets)
 {

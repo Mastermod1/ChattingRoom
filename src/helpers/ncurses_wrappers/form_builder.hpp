@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "form_wrapper.hpp"
+#include "src/helpers/ncurses_wrappers/form_wrapper.hpp"
 
 class FormBuilder
 {

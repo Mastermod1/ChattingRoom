@@ -1,4 +1,4 @@
-#include "main_menu_state.hpp"
+#include "src/view_states/main_menu_state.hpp"
 
 #include <ncurses.h>
 
@@ -6,9 +6,9 @@
 #include <memory>
 #include <string>
 
-#include "context.hpp"
-#include "menu_wrapper.hpp"
-#include "state_factory.hpp"
+#include "src/view_states/context.hpp"
+#include "src/helpers/ncurses_wrappers/menu_wrapper.hpp"
+#include "src/view_states/state_factory.hpp"
 
 void MainMenuState::render()
 {

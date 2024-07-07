@@ -2,7 +2,7 @@
 #pragma once
 
 #include <memory>
-#include "state.hpp"
+#include "src/view_states/state.hpp"
 
 enum class DisplayState
 {

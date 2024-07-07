@@ -1,10 +1,10 @@
-#include "state_factory.hpp"
+#include "src/view_states/state_factory.hpp"
 
-#include "client_state.hpp"
-#include "connect_menu_state.hpp"
-#include "host_menu_state.hpp"
-#include "host_state.hpp"
-#include "main_menu_state.hpp"
+#include "src/view_states/client_state.hpp"
+#include "src/view_states/connect_menu_state.hpp"
+#include "src/view_states/host_menu_state.hpp"
+#include "src/view_states/host_state.hpp"
+#include "src/view_states/main_menu_state.hpp"
 
 std::unique_ptr<State> StateFactory::get(const DisplayState state)
 {
