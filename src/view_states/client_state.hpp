@@ -7,11 +7,12 @@
 #include "src/unnamed_protocol/socket_handler.hpp"
 
 class Context;
+class Window;
 
 class ClientState : public State
 {
   public:
-    ClientState() = default;
+    ClientState();
     ClientState(const ClientState& rhs) = default;
     ClientState(ClientState&& rhs) noexcept = default;
     ClientState& operator=(const ClientState& rhs) = default;
@@ -25,4 +26,6 @@ class ClientState : public State
     std::weak_ptr<Context> ctx_;
     std::unique_ptr<std::thread> receiver_thread_;
     unnamed_protocol::SocketHandler connection_;
+    std::unique_ptr<Window> chat_window_;
+    std::unique_ptr<Window> input_window_;
 };

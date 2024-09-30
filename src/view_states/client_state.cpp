@@ -7,24 +7,26 @@
 #include <unistd.h>
 
 #include <cstdlib>
-#include <functional>
 #include <memory>
 #include <thread>
 #include <unordered_map>
 
-#include "src/view_states/context.hpp"
 #include "src/helpers/helpers.hpp"
+#include "src/helpers/ncurses_wrappers/window_wrapper.hpp"
 #include "src/logger/logger.hpp"
+#include "src/view_states/context.hpp"
+
+ClientState::ClientState()
+{
+    chat_window_ = std::make_unique<Window>(LINES - 4, COLS, 0, 0);
+    input_window_ = std::make_unique<Window>(4, COLS, LINES - 4, 0);
+    scrollok(*chat_window_, true);
+    chat_window_->refresh();
+    input_window_->refresh();
+}
 
 void ClientState::render()
 {
-    std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> chat_window(newwin(LINES - 4, COLS, 0, 0), delwin);
-    std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> input_window(newwin(4, COLS, LINES - 4, 0), delwin);
-
-    box(chat_window.get(), 0, 0);
-    box(input_window.get(), 0, 0);
-    wrefresh(chat_window.get());
-    wrefresh(input_window.get());
 
     std::unordered_map<std::string, std::string> form_values;
     if (auto ptr = ctx_.lock())
@@ -50,9 +52,8 @@ void ClientState::render()
     connection_.send(name);
     LOG_INFO() << "Extracted name: " << name.c_str();
 
-    int new_line_index = 0;
     receiver_thread_ = std::make_unique<std::thread>(
-        [this, &chat_window, &new_line_index]()
+        [this]()
         {
             while (true)
             {
@@ -61,23 +62,22 @@ void ClientState::render()
                 {
                     return 0;
                 }
-                mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s", buffer.c_str());
-                new_line_index++;
-                box(chat_window.get(), 0, 0);
-                wrefresh(chat_window.get());
+                chat_window_->print(buffer);
+                chat_window_->refresh();
             }
         });
 
     while (true)
     {
         char buffer[256] = {0};
-        getInput(buffer, input_window, chat_window, new_line_index, name);
+        getInput(buffer, input_window_, name);
+        chat_window_->print(buffer);
+        chat_window_->refresh();
         if (connection_.send(buffer) == Status::Error)
         {
             exit(-1);
         }
     }
-
 }
 
 ClientState::~ClientState()
