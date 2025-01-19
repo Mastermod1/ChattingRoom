@@ -61,6 +61,7 @@ void HostState::render()
             {
                 auto client_connection = connection_.acceptConnection();
                 clients.push_back(client_connection);
+                client_connection->sendKey();
                 auto [name, status] = client_connection->receive();
                 if (status == Status::Error)
                 {

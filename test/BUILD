@@ -1,9 +1,18 @@
 cc_test(
+    name = "test_crypto",
+    srcs = ["test_cryptopp.cpp"],
+    deps = [
+        "@googletest//:gtest_main",
+        "//:crypto++",
+    ]
+)
+
+cc_test(
     name = "test_helpers",
     srcs = ["test_helpers.cpp"],
     deps = [
         "//src/helpers:helpers",
-        "@com_google_googletest//:gtest_main"
+        "@googletest//:gtest_main"
     ]
 )
 
@@ -12,7 +21,7 @@ cc_test(
     srcs = ["test_unnamed_protocol_header.cpp"],
     deps = [
         "//src/unnamed_protocol:unnamed_protocol",
-        "@com_google_googletest//:gtest_main"
+        "@googletest//:gtest_main"
     ]
 )
 
@@ -21,6 +30,6 @@ cc_test(
     srcs = ["test_unnamed_protocol_connection.cpp"],
     deps = [
         "//src/unnamed_protocol:unnamed_protocol",
-        "@com_google_googletest//:gtest_main"
+        "@googletest//:gtest_main"
     ]
 )

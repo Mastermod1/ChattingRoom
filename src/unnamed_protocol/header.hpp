@@ -4,6 +4,13 @@
 
 namespace unnamed_protocol::header
 {
+enum HeaderType : std::uint8_t
+{
+    INIT,
+    KEY_EXCHANGE,
+    MESSAGE,
+};
+
 struct Header
 {
     std::uint8_t type_;

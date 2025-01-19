@@ -19,7 +19,7 @@ class Window
     void print(std::string str)
     {
         mvwprintw(win_, cursor_, 1, "%s\n", str.c_str());
-        if (cursor_ < height_ - 1)
+        if (cursor_ < (std::size_t)height_ - 1)
             cursor_++;
     }
     ~Window() { delwin(win_); }

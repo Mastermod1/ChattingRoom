@@ -49,6 +49,7 @@ void ClientState::render()
     }
 
     const std::string& name = form_values.at("name");
+    connection_.receive(); // receive key
     connection_.send(name);
     LOG_INFO() << "Extracted name: " << name.c_str();
 
