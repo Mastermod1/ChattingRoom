@@ -6,11 +6,12 @@
 #include "src/unnamed_protocol/socket_handler.hpp"
 
 class Context;
+class Window;
 
 class HostState : public State
 {
   public:
-    HostState() = default;
+    HostState();
     HostState(const HostState& rhs) = default;
     HostState(HostState&& rhs) = default;
     HostState& operator=(const HostState& rhs) = default;
@@ -23,4 +24,6 @@ class HostState : public State
   private:
     std::weak_ptr<Context> ctx_;
     unnamed_protocol::SocketHandler connection_; 
+    std::unique_ptr<Window> chat_window_;
+    std::unique_ptr<Window> input_window_;
 };

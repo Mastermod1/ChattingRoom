@@ -4,6 +4,7 @@ cc_library(
     srcs = glob(["*.cpp"]),
     deps = [
         "//:ncurses",
+        "//src/helpers/ncurses_wrappers",
     ],
     visibility = ["//visibility:public"],
 )

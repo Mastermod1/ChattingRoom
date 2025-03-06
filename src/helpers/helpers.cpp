@@ -15,9 +15,7 @@ in_addr_t convertStringAddressToUint32(const std::string& address)
     return ip_address;
 }
 
-void getInput(char* buffer, std::unique_ptr<WINDOW, std::function<void(WINDOW*)>>& input_window,
-              std::unique_ptr<WINDOW, std::function<void(WINDOW*)>>& chat_window, int& new_line_index,
-              const std::string& name)
+void getInput(char* buffer, std::unique_ptr<Window>& input_window, const std::string& name)
 {
     int i = 0;
     for (const auto& c : name)
@@ -29,33 +27,29 @@ void getInput(char* buffer, std::unique_ptr<WINDOW, std::function<void(WINDOW*)>
     i++;
     buffer[i] = ' ';
     i++;
-    wmove(input_window.get(), 1, 1);
+    wmove(*input_window, 1, 1);
     char ch;
-    while ((ch = wgetch(input_window.get())) != '\n')
+    while ((ch = wgetch(*input_window)) != '\n')
     {
         if (ch == 127)
         {
             if (i - name.length() - 2 > 0)
             {
-                mvwprintw(input_window.get(), 1, i - name.length() - 2, " ");
+                mvwprintw(*input_window, 1, i - name.length() - 2, " ");
                 i--;
-                wrefresh(input_window.get());
+                wrefresh(*input_window);
             }
         }
         else
         {
             buffer[i++] = ch;
-            mvwaddch(input_window.get(), 1, i - name.length() - 2, ch);
-            wrefresh(input_window.get());
+            mvwaddch(*input_window, 1, i - name.length() - 2, ch);
+            wrefresh(*input_window);
         }
-        wmove(input_window.get(), 1, 1 + i - name.length() - 2);
+        wmove(*input_window, 1, 1 + i - name.length() - 2);
     }
-    wclear(input_window.get());
-    box(input_window.get(), 0, 0);
-    wrefresh(input_window.get());
+    wclear(*input_window);
+    box(*input_window, 0, 0);
+    wrefresh(*input_window);
     buffer[i] = '\0';
-    mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s", buffer);
-    new_line_index++;
-    box(chat_window.get(), 0, 0);
-    wrefresh(chat_window.get());
 }

@@ -5,6 +5,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//src/common:common",
-        "//src/helpers:helpers"
+        "//src/helpers:helpers",
+        "//:crypto++",
     ],
 )

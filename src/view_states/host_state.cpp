@@ -7,27 +7,28 @@
 #include <unistd.h>
 
 #include <algorithm>
-#include <functional>
 #include <memory>
 #include <thread>
 #include <unordered_map>
 
 #include "src/helpers/helpers.hpp"
+#include "src/helpers/ncurses_wrappers/window_wrapper.hpp"
 #include "src/logger/logger.hpp"
 #include "src/view_states/context.hpp"
 
 using namespace unnamed_protocol;
 
+HostState::HostState()
+{
+    chat_window_ = std::make_unique<Window>(LINES - 4, COLS, 0, 0);
+    input_window_ = std::make_unique<Window>(4, COLS, LINES - 4, 0);
+    scrollok(*chat_window_, true);
+    chat_window_->refresh();
+    input_window_->refresh();
+}
+
 void HostState::render()
 {
-    std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> chat_window(newwin(LINES - 4, COLS, 0, 0), delwin);
-    std::unique_ptr<WINDOW, std::function<void(WINDOW*)>> input_window(newwin(4, COLS, LINES - 4, 0), delwin);
-
-    box(chat_window.get(), 0, 0);
-    box(input_window.get(), 0, 0);
-    wrefresh(chat_window.get());
-    wrefresh(input_window.get());
-
     std::unordered_map<std::string, std::string> form_values;
     if (auto ptr = ctx_.lock())
     {
@@ -53,14 +54,14 @@ void HostState::render()
     LOG_INFO() << "Extracted name: " << name.c_str();
     std::vector<std::shared_ptr<SocketHandler>> clients;
 
-    int new_line_index = 0;
     std::thread listener_thread = std::thread(
-        [this, &clients, &chat_window, &new_line_index]
+        [this, &clients]
         {
             while (true)
             {
                 auto client_connection = connection_.acceptConnection();
                 clients.push_back(client_connection);
+                client_connection->sendKey();
                 auto [name, status] = client_connection->receive();
                 if (status == Status::Error)
                 {
@@ -76,24 +77,20 @@ void HostState::render()
                                       client->send(welcome_message);
                                   }
                               });
-                mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s", welcome_message.c_str());
-                new_line_index++;
-                box(chat_window.get(), 0, 0);
-                wrefresh(chat_window.get());
+                chat_window_->print(welcome_message);
+                chat_window_->refresh();
                 // LOG_INFO() << "Accepted client: " << std::to_string(client_connection.socket_).c_str();
 
                 std::thread printer = std::thread(
-                    [&chat_window, &new_line_index, &clients](std::shared_ptr<SocketHandler> client_connection)
+                    [this, &clients](std::shared_ptr<SocketHandler> client_connection)
                     {
                         while (true)
                         {
                             auto [message, status] = client_connection->receive();
                             if (status == Status::Error)
                             {
-                                mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s", "Error");
-                                new_line_index++;
-                                box(chat_window.get(), 0, 0);
-                                wrefresh(chat_window.get());
+                                chat_window_->print("Error");
+                                chat_window_->refresh();
                                 return 0;
                             }
 
@@ -108,10 +105,8 @@ void HostState::render()
                                                   client->send(msg);
                                               }
                                           });
-                            mvwprintw(chat_window.get(), 1 + new_line_index, 1, "%s", message.c_str());
-                            new_line_index++;
-                            box(chat_window.get(), 0, 0);
-                            wrefresh(chat_window.get());
+                            chat_window_->print(message);
+                            chat_window_->refresh();
                         }
                     },
                     client_connection);
@@ -123,7 +118,9 @@ void HostState::render()
     while (true)
     {
         char buffer[256] = {0};
-        getInput(buffer, input_window, chat_window, new_line_index, name);
+        getInput(buffer, input_window_, name);
+        chat_window_->print(buffer);
+        chat_window_->refresh();
         std::for_each(clients.begin(), clients.end(), [&buffer](const auto& client) { client->send(buffer); });
     }
 }
